@@ -18,7 +18,7 @@ type fatcher struct {
 }
 
 type Fatcher interface {
-	Fatch(ctx context.Context) <-chan []byte
+	Fatch(ctx context.Context) chan<- []byte
 }
 
 func NewFatcher(c HttpGetter, u <-chan string) Fatcher {
@@ -28,7 +28,7 @@ func NewFatcher(c HttpGetter, u <-chan string) Fatcher {
 	}
 }
 
-func (f *fatcher) Fatch(ctx context.Context) <-chan []byte {
+func (f *fatcher) Fatch(ctx context.Context) chan<- []byte {
 	c := make(chan []byte)
 	go f.internal(ctx, c)
 	return c
@@ -45,11 +45,11 @@ func (f *fatcher) internal(ctx context.Context, responses chan<- []byte) {
 			}
 
 			res, err := f.client.Get(url)
-			if err != nil {
+			if err != nil { // todo: add more rubust error handleing that includes retrys
 				log.Fatal(err)
 			}
 
-			body, err := handleRespone(res)
+			body, err := handleRespone(res) // todo: add more rubust error handleing that includes retrys
 			if err != nil {
 				log.Fatal(err)
 			}
