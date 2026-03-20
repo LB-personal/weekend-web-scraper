@@ -47,7 +47,8 @@ func newTestScenario(name string, inputs []string, expected [][]byte, cr map[str
 			client: &mockHttpGetter{
 				cannedResponses: cr,
 			},
-			urls: in,
+			urls:       in,
+			bufferSize: 1,
 		},
 		inputs:   inputs,
 		expected: expected,

@@ -13,23 +13,25 @@ type HttpGetter interface {
 }
 
 type fatcher struct {
-	client HttpGetter
-	urls   <-chan string
+	client     HttpGetter
+	urls       <-chan string
+	bufferSize int
 }
 
 type Fatcher interface {
-	Fatch(ctx context.Context) chan<- []byte
+	Fatch(ctx context.Context) <-chan []byte
 }
 
-func NewFatcher(c HttpGetter, u <-chan string) Fatcher {
+func NewFatcher(c HttpGetter, u <-chan string, size int) Fatcher {
 	return &fatcher{
-		client: c,
-		urls:   u,
+		client:     c,
+		urls:       u,
+		bufferSize: size,
 	}
 }
 
-func (f *fatcher) Fatch(ctx context.Context) chan<- []byte {
-	c := make(chan []byte)
+func (f *fatcher) Fatch(ctx context.Context) <-chan []byte {
+	c := make(chan []byte, f.bufferSize)
 	go f.internal(ctx, c)
 	return c
 }
