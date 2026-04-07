@@ -1,10 +1,14 @@
 package domain
 
+import "net/url"
+
 type Book struct {
-	Name     string
-	Rating   Rating
-	Price    Money
-	Category string
+	Name   string
+	Rating Rating
+	Price  Money
+	//	Category   string - requires enrichment, will skip for not and add after mvp
+	InStock    bool
+	DetailPage *url.URL
 }
 
 type Stats struct {
