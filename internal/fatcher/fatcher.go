@@ -6,6 +6,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/LB-personal/weekend-web-scraper/internal/domain"
 )
 
 type HttpGetter interface {
@@ -19,7 +21,7 @@ type fatcher struct {
 }
 
 type Fatcher interface {
-	Fatch(ctx context.Context) <-chan []byte
+	Fatch(ctx context.Context) <-chan *domain.PageData
 }
 
 func NewFatcher(c HttpGetter, u <-chan string, size int) Fatcher {
@@ -30,13 +32,13 @@ func NewFatcher(c HttpGetter, u <-chan string, size int) Fatcher {
 	}
 }
 
-func (f *fatcher) Fatch(ctx context.Context) <-chan []byte {
-	c := make(chan []byte, f.bufferSize)
+func (f *fatcher) Fatch(ctx context.Context) <-chan *domain.PageData {
+	c := make(chan *domain.PageData, f.bufferSize)
 	go f.internal(ctx, c)
 	return c
 }
 
-func (f *fatcher) internal(ctx context.Context, responses chan<- []byte) {
+func (f *fatcher) internal(ctx context.Context, responses chan<- *domain.PageData) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -56,7 +58,10 @@ func (f *fatcher) internal(ctx context.Context, responses chan<- []byte) {
 				log.Fatal(err)
 			}
 
-			responses <- body
+			responses <- &domain.PageData{
+				Content: body,
+				Url:     url,
+			}
 		}
 	}
 }

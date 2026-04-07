@@ -15,3 +15,8 @@ type Stats struct {
 	AvaragePrice  Money
 	CountByRating map[Rating]int
 }
+
+type PageData struct {
+	Content []byte
+	Url     string
+}

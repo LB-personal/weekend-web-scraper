@@ -8,6 +8,8 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	"github.com/LB-personal/weekend-web-scraper/internal/domain"
 )
 
 type cannedResponse struct {
@@ -35,10 +37,10 @@ type testScenario struct {
 	in       chan string
 	f        *fatcher
 	inputs   []string
-	expected [][]byte
+	expected []*domain.PageData
 }
 
-func newTestScenario(name string, inputs []string, expected [][]byte, cr map[string]*cannedResponse) testScenario {
+func newTestScenario(name string, inputs []string, expected []*domain.PageData, cr map[string]*cannedResponse) testScenario {
 	in := make(chan string)
 	return testScenario{
 		name: name,
@@ -60,7 +62,12 @@ func Test_fatcher_Fatch(t *testing.T) {
 		newTestScenario(
 			"fetch one url",
 			[]string{"mock"},
-			[][]byte{{}},
+			[]*domain.PageData{
+				{
+					Content: []byte{},
+					Url:     "mock",
+				},
+			},
 			map[string]*cannedResponse{
 				"mock": {
 					resp: &http.Response{
@@ -80,9 +87,12 @@ func Test_fatcher_Fatch(t *testing.T) {
 			out := tt.f.Fatch(context.Background())
 			for i, v := range tt.inputs {
 				tt.in <- v
-				body := <-out
-				if !slices.Equal(body, tt.expected[i]) {
-					t.Errorf("%s: iteration %d expected %+q, actual %+q", tt.name, i, tt.expected[i], body)
+				pd := <-out
+				if !slices.Equal(pd.Content, tt.expected[i].Content) {
+					t.Errorf("%s: iteration %d expected %+q content, actual %+q", tt.name, i, tt.expected[i].Content, pd.Content)
+				}
+				if v != pd.Url {
+					t.Errorf("%s: iteration %d returned a url that is diffrent then what sent to it", tt.name, i)
 				}
 			}
 
