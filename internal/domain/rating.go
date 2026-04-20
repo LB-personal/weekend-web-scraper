@@ -10,7 +10,7 @@ type Rating struct {
 }
 
 func NewRateing(v uint8) (Rating, error) {
-	if v >= 1 && v <= 5 {
+	if v <= 5 {
 		return Rating{
 			value: v,
 		}, nil
