@@ -9,16 +9,6 @@ import (
 	html "golang.org/x/net/html"
 )
 
-var (
-	aTag     = []byte("a")
-	hrefKey  = []byte("href")
-	nextText = []byte("next")
-	olTag    = []byte("ol")
-	classKey = []byte("class")
-	rowClass = []byte("row")
-	pTag     = []byte("p")
-)
-
 func NewParser(in <-chan domain.PageData, report chan<- string) <-chan domain.Book {
 	o := make(chan domain.Book)
 	go parse(in, report, o)
@@ -156,19 +146,14 @@ func parseRatings(ratingClass string) domain.Rating {
 	switch a {
 	case "One":
 		r = 1
-		break
 	case "Two":
 		r = 2
-		break
 	case "Three":
 		r = 3
-		break
 	case "Four":
 		r = 4
-		break
 	case "Five":
 		r = 5
-		break
 	}
 
 	rating, _ := domain.NewRateing(r)

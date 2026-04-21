@@ -29,6 +29,7 @@ func (s *tokenStream) Next() html.TokenType {
 			if err != io.EOF {
 				log.Fatal("scraped site is broken", s.z.Err())
 			}
+			fallthrough
 		default:
 			return tt
 		}
