@@ -22,7 +22,7 @@ func (s *tokenStream) Next() html.TokenType {
 	for {
 		tt := s.z.Next()
 		switch tt {
-		case html.TextToken, html.CommentToken, html.DoctypeToken:
+		case html.CommentToken, html.DoctypeToken:
 			continue
 		case html.ErrorToken:
 			err := s.z.Err()
@@ -41,7 +41,9 @@ func (s *tokenStream) Tag() (string, map[string]string) {
 	attrs := map[string]string{}
 	for hasAttr {
 		k, v, more := s.z.TagAttr()
-		attrs[string(k)] = string(v)
+		if _, ok := attrs[string(k)]; !ok {
+			attrs[string(k)] = string(v)
+		}
 		hasAttr = more
 	}
 	return string(name), attrs
