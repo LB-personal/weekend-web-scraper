@@ -19,8 +19,8 @@ func NewMoney(s string) (Money, error) {
 	if len(p) != 2 {
 		return 0, errors.New("money format is invalid")
 	}
-	major := p[0]
-	minor, found := strings.CutSuffix(p[1], "£")
+	minor := p[1]
+	major, found := strings.CutPrefix(p[0], "£")
 	if !found {
 		return 0, errors.New("money format is invalid")
 	}
@@ -44,5 +44,5 @@ func NewMoney(s string) (Money, error) {
 }
 
 func (m Money) String() string {
-	return fmt.Sprintf("%d.%d£", m/resoulotion, m%resoulotion)
+	return fmt.Sprintf("£%d.%d", m/resoulotion, m%resoulotion)
 }
