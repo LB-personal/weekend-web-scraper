@@ -22,7 +22,7 @@ func parse(in <-chan domain.PageData, report chan<- string, out chan<- domain.Bo
 			close(report)
 		} else {
 			u := resolveUrl(pd.Url, u)
-			report <- u.RequestURI()
+			report <- u.String()
 		}
 
 		parseBooks(pd, out)
@@ -72,15 +72,20 @@ func parseBooks(pd domain.PageData, o chan<- domain.Book) {
 	}
 
 	for {
-		if s.Next() == html.EndTagToken {
+		switch s.Next() {
+		case html.TextToken:
+			if strings.Trim(string(s.z.Text()), "\t\r\n ") != "" {
+				log.Fatalf("html is malformed")
+			}
+		case html.EndTagToken:
 			if name, _ := s.Tag(); name != "ol" {
 				log.Fatal("html is malformed")
 			}
+			return
+		default:
+			book := parseBook(s, pd.Url)
+			o <- book
 		}
-
-		book := parseBook(s, pd.Url)
-		o <- book
-
 	}
 }
 

@@ -11,6 +11,14 @@ type Book struct {
 	DetailPage *url.URL
 }
 
+func (b Book) Equals(o Book) bool {
+	return b.Name == o.Name &&
+		b.Rating == o.Rating &&
+		b.Price == o.Price &&
+		b.InStock == o.InStock &&
+		*b.DetailPage == *o.DetailPage
+}
+
 type Stats struct {
 	TotalBooks    int
 	Categories    int
