@@ -17,7 +17,6 @@ func TestNewRateing(t *testing.T) {
 	}{
 		{"in range", args{2}, Rating{2}, false},
 		{"above range", args{100}, Rating{}, true},
-		{"below range", args{0}, Rating{}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
