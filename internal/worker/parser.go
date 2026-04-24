@@ -18,9 +18,7 @@ func NewParser(in <-chan domain.PageData, report chan<- string) <-chan domain.Bo
 func parse(in <-chan domain.PageData, report chan<- string, out chan<- domain.Book) {
 	for pd := range in {
 		u, l := getNextPageUrl(pd.Content)
-		if l {
-			close(report)
-		} else {
+		if !l {
 			u := resolveUrl(pd.Url, u)
 			report <- u.String()
 		}
